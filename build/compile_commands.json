@@ -1,0 +1,50 @@
+[
+{
+  "directory": "D:/C++/bank/build",
+  "command": "C:\\msys64\\ucrt64\\bin\\g++.exe   -g -std=gnu++17 -o CMakeFiles\\bank_app.dir\\src\\app.cpp.obj -c D:\\C++\\bank\\src\\app.cpp",
+  "file": "D:/C++/bank/src/app.cpp",
+  "output": "CMakeFiles/bank_app.dir/src/app.cpp.obj"
+},
+{
+  "directory": "D:/C++/bank/build",
+  "command": "C:\\msys64\\ucrt64\\bin\\g++.exe   -g -std=gnu++17 -o CMakeFiles\\bank_app.dir\\src\\bank.cpp.obj -c D:\\C++\\bank\\src\\bank.cpp",
+  "file": "D:/C++/bank/src/bank.cpp",
+  "output": "CMakeFiles/bank_app.dir/src/bank.cpp.obj"
+},
+{
+  "directory": "D:/C++/bank/build",
+  "command": "C:\\msys64\\ucrt64\\bin\\g++.exe   -g -std=gnu++17 -o CMakeFiles\\bank_app.dir\\src\\customer.cpp.obj -c D:\\C++\\bank\\src\\customer.cpp",
+  "file": "D:/C++/bank/src/customer.cpp",
+  "output": "CMakeFiles/bank_app.dir/src/customer.cpp.obj"
+},
+{
+  "directory": "D:/C++/bank/build",
+  "command": "C:\\msys64\\ucrt64\\bin\\g++.exe   -g -std=gnu++17 -o CMakeFiles\\bank_app.dir\\src\\account.cpp.obj -c D:\\C++\\bank\\src\\account.cpp",
+  "file": "D:/C++/bank/src/account.cpp",
+  "output": "CMakeFiles/bank_app.dir/src/account.cpp.obj"
+},
+{
+  "directory": "D:/C++/bank/build",
+  "command": "C:\\msys64\\ucrt64\\bin\\g++.exe   -g -std=gnu++17 -o CMakeFiles\\bank_app.dir\\src\\checkingAccount.cpp.obj -c D:\\C++\\bank\\src\\checkingAccount.cpp",
+  "file": "D:/C++/bank/src/checkingAccount.cpp",
+  "output": "CMakeFiles/bank_app.dir/src/checkingAccount.cpp.obj"
+},
+{
+  "directory": "D:/C++/bank/build",
+  "command": "C:\\msys64\\ucrt64\\bin\\g++.exe   -g -std=gnu++17 -o CMakeFiles\\bank_app.dir\\src\\savingsAccount.cpp.obj -c D:\\C++\\bank\\src\\savingsAccount.cpp",
+  "file": "D:/C++/bank/src/savingsAccount.cpp",
+  "output": "CMakeFiles/bank_app.dir/src/savingsAccount.cpp.obj"
+},
+{
+  "directory": "D:/C++/bank/build",
+  "command": "C:\\msys64\\ucrt64\\bin\\g++.exe   -g -std=gnu++17 -o CMakeFiles\\bank_app.dir\\src\\loan.cpp.obj -c D:\\C++\\bank\\src\\loan.cpp",
+  "file": "D:/C++/bank/src/loan.cpp",
+  "output": "CMakeFiles/bank_app.dir/src/loan.cpp.obj"
+},
+{
+  "directory": "D:/C++/bank/build",
+  "command": "C:\\msys64\\ucrt64\\bin\\g++.exe   -g -std=gnu++17 -o CMakeFiles\\bank_app.dir\\src\\time.cpp.obj -c D:\\C++\\bank\\src\\time.cpp",
+  "file": "D:/C++/bank/src/time.cpp",
+  "output": "CMakeFiles/bank_app.dir/src/time.cpp.obj"
+}
+]
