@@ -1,0 +1,67 @@
+bank
+{
+    values:
+    a list of all the customers
+
+    functions:
+    can approve a loan
+    can create customer and delete customer
+    can transfer money between customers
+    
+    other things:
+    the bank is a friend class to customer
+}
+    customer
+    {
+        values:
+        id
+        a list of all account
+        a list of all loans
+
+        functions:
+        can create new account/loan (altho loan need approval from bank)
+        transfer money between diffrent accounts (in the same customer)
+        withdraw (or deposit) money from a spesific account
+    }
+        account
+        {
+            values:
+            balance
+            id
+
+            functions:
+            deposit
+            withdraw
+        }
+            savings account
+            {
+                values:
+                interest percent
+                last day (not a year because me like fast things) of interest calculation
+
+                functions:
+                calculate interest and add it into the balance
+                overide the deposit and the withdraw to add interest calculation
+
+                inherit from account
+            }
+            checking account
+            {
+                nothing
+                inherit from account
+            }
+        loan
+        {
+           values:
+           interest percent
+           debt
+           id
+           last day (not a year because me like fast things) of interest calculation
+
+           functions:
+            calculate interest and add it into the balance
+            pay loan
+        }
+
+and of course consturcotr for each one
+    
