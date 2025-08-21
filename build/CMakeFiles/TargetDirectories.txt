@@ -1,3 +1,0 @@
-D:/C++/bank/build/CMakeFiles/bank_app.dir
-D:/C++/bank/build/CMakeFiles/edit_cache.dir
-D:/C++/bank/build/CMakeFiles/rebuild_cache.dir
