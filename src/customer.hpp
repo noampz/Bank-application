@@ -4,6 +4,8 @@
 #include "account.hpp"
 #include "checkingAccount.hpp"
 #include "savingsAccount.hpp"
+#include <string.h>
+#include <functional>
 
 class Bank;
 
@@ -12,17 +14,28 @@ class Customer
     private:
     // savings accounts ID will be %2 == 0
     // while checking accounts ID will be %2 == 1
+    // IMPORTANT: Main account will also be here (currently it will be the first checking account)
     std::vector<Account*> accounts;
+
+    //explicitly a checking account
+    CheckingAccount* main_account;
+
     std::vector<Loan*> loans;
     uint32_t id;
     Bank &bank;
+    std::string full_name;
+    size_t hashed_password;
 
     public:
 
-    Customer(uint32_t id, Bank &bank);
+    Customer(uint32_t id, std::string full_name, std::string password, Bank &bank);
     ~Customer();
     //gets
     uint32_t getID() const {return id;}
+    size_t getHashedPassword() const {return hashed_password;}
+    std::string getFullName() const {return full_name;}
+    CheckingAccount* getMainAccount() const {return main_account;}
+
     // get by id
     Account* getAccount(uint32_t id) const;
     Loan* getLoan(uint32_t id) const;

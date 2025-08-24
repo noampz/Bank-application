@@ -1,5 +1,6 @@
 #include "bank.hpp"
 #include <cstdlib>
+#include <functional>
 
 Bank::Bank() : basic_interest(3.0), seeded(false) {}
 
@@ -23,10 +24,31 @@ double Bank::approveLoan(Customer *customer, double debt)
     return (5 * debt / (total_balance == 0 ? 1 : total_balance)) + basic_interest;
 }
 
-uint32_t Bank::createCustomer()
+//TODO:
+// change this thingy
+bool Bank::isPasswordGood(std::string password)
 {
+    return true;
+}
+
+bool Bank::isFullNameGood(std::string full_name)
+{
+    if (full_name.length() < 3)
+    {
+        std::cout << "your full name cannot be less than 3 characters\n";
+        return false;
+    }
+    return true;
+}
+
+uint32_t Bank::createCustomer(std::string full_name, std::string password)
+{
+    if (!isPasswordGood(password) || !isFullNameGood(full_name))
+        return -1;
+
     uint32_t id = makeNewCustomerID();
-    customers.push_back(new Customer(id, *this));
+
+    customers.push_back(new Customer(id, full_name, password,*this));
     return id;
     
 }
@@ -40,8 +62,16 @@ uint32_t Bank::makeNewCustomerID()
         srand((uint64_t)&temp);
     }
 
-    // returns a number from 0 to the max number of unit32_t
-    return (rand() * rand() * rand() * rand()) % 4294967295;
+    // makes a number from 0 to the max number of unit32_t
+    uint32_t customer_id = (rand() * rand() * rand() * rand()) % 4294967295;
+
+    for (Customer* customer : customers)
+    {
+        if (customer->getID() == customer_id)
+            customer_id = makeNewCustomerID();
+    }
+    
+    return customer_id;
 }
 
 bool Bank::deleteCustomer(int customer_id)
@@ -68,6 +98,9 @@ bool Bank::deleteCustomer(int customer_id)
         customers.pop_back();
     }
 
+    if (found == false)
+        std::cout << "Customer with the ID: " << customer_id << " was not found";
+
     customers = customers_copy;
     return found;
 }
@@ -75,11 +108,30 @@ bool Bank::deleteCustomer(int customer_id)
 bool Bank::transfer(Customer &from_customer, uint32_t from_id_of_account, Customer &to_customer, uint32_t to_id_of_account, double amount)
 {
     Account *from_account = from_customer.getAccount(from_id_of_account);
-    if (from_account == NULL)
+    if (from_account == nullptr)
        return false;
 
     Account *to_account = to_customer.getAccount(to_id_of_account);
-    if (to_account == NULL)
+    if (to_account == nullptr)
+        return false;
+
+    if(from_account->withdraw(amount) >= 0)
+    {
+        to_account->deposit(amount);
+        return true;
+    }
+        
+    return false;
+}
+
+bool Bank::transfer(Customer &from_customer, Customer &to_customer, double amount)
+{
+    Account *from_account = from_customer.getMainAccount();
+    if (from_account == nullptr)
+       return false;
+
+    Account *to_account = to_customer.getMainAccount();
+    if (to_account == nullptr)
         return false;
 
     if(from_account->withdraw(amount) >= 0)
@@ -130,6 +182,32 @@ Customer* Bank::getCustomer(uint32_t customer_id)
     }
 
     std::cout << "no customer found with this ID: " << customer_id << "\n";
-    return NULL;
+    return nullptr;
+}
+
+Customer* Bank::getCustomer(std::string full_name, std::string password)
+{
+    std::hash<std::string> hasher;
+    size_t hashed_password = hasher(password);
+
+    bool name_found = false;
+
+    for (Customer* customer : customers)
+    {
+        if (customer->getFullName() == full_name)
+        {
+            if (customer->getHashedPassword() == hashed_password)
+            {
+                return customer;
+            }
+            name_found = true;
+        }
+            
+    }
+    if (!name_found)
+        std::cout << "No customer found with the name: " << full_name << "\n";
+    else
+        std::cout << "Either the password or the full name is incorrect.\n";
+    return nullptr;
 }
    

@@ -1,4 +1,6 @@
-#include "bank.hpp"
+#include "./src/bank.hpp"
+#include <iostream>
+#include <string>
 #include <Windows.h>
 
 void clearScreen() 
@@ -26,9 +28,22 @@ bool starterMenu(Bank *bank, Customer **customer)
     {   
     case 1:
     {
-        uint32_t id = bank->createCustomer();
-        std::cout << "you are now a customer\n and your ID is: ";
-        std::cout << id << "\n";
+        clearScreen();
+        //needed for the get line
+        std::cin.ignore();
+
+        std::cout << "+------Sign Up------+\n";
+        std::cout << "What is you full name? ";
+
+        std::string full_name;
+        std::getline(std::cin, full_name);
+
+        std::cout << "\nInsert a new password: ";
+        std::string password;
+        std::getline(std::cin, password);
+
+        uint32_t id = bank->createCustomer(full_name, password);
+
         *customer = bank->getCustomer(id);
         std::cout << "You are now logged into your new account.\n";
         Sleep(2000);
@@ -46,14 +61,25 @@ bool starterMenu(Bank *bank, Customer **customer)
             {
                 std::cout << "this is try num " << try_num << " out of 3 tries\n\n";
             }
+            else
+            {
+                std::cin.ignore();
+            }
+            
+            std::cout << "what is your full name? ";
+            
+            std::string full_name;
+            std::getline(std::cin, full_name);
 
-            std::cout << "what is your customer ID? ";
-            std::cin >> id;
-            *customer = bank->getCustomer(id);
+            std::cout << "what is your password? ";
+            std::string password;
+            std::getline(std::cin, password);
+
+            *customer = bank->getCustomer(full_name, password);
             try_num++;
-        } while (try_num < 3 && *customer == NULL);
+        } while (try_num < 3 && *customer == nullptr);
         
-        if (*customer == NULL)
+        if (*customer == nullptr)
         {
             Sleep(2000);
             return true;
@@ -67,7 +93,7 @@ bool starterMenu(Bank *bank, Customer **customer)
     case 3:
     {
         std::cout << "Quitting...\n";
-        delete bank;
+
         return true;
     }
 
@@ -113,7 +139,7 @@ void printSecondMenu()
 int secondMenu(Bank *bank, Customer **customer)
 {
     clearScreen();
-    if (*customer == NULL)
+    if (*customer == nullptr)
     {
         std::cout << "the program tried to run the second menu without any customer connected.\n";
         std::cout << "Quiting...\n";
@@ -169,7 +195,7 @@ int secondMenu(Bank *bank, Customer **customer)
         std::cout << "\nwhat is the ID of the account from which you want to recive the money? ";
         std::cin >> account_id;
         Account * account = (*customer)->getAccount(account_id);
-        if (account == NULL)
+        if (account == nullptr)
             break;
 
         uint32_t loan_answer = (*customer)->createLoan(amount, account);
@@ -234,28 +260,20 @@ int secondMenu(Bank *bank, Customer **customer)
     }
     case 6:
     {
-        uint32_t withdraw_account_id;
-        std::cout << "\nwhat is the ID of the account from which you want to send the money? ";
-        std::cin >> withdraw_account_id;
-
         uint32_t deposit_customer_id;
         std::cout << "\nwhat is the ID of the customer that you want to send him money? ";
         std::cin >> deposit_customer_id;
 
         Customer *deposit_customer = bank->getCustomer(deposit_customer_id);
 
-        if (deposit_customer == NULL)
+        if (deposit_customer == nullptr)
             break;
-
-        uint32_t deposit_account_id;
-        std::cout << "\nwhat is the ID of the account inside the customer account that you want to send money to? ";
-        std::cin >> deposit_account_id;
 
         double amount;
         std::cout << "\nhow much do you want to transfer? ";
         std::cin >> amount;
 
-        if(bank->transfer(**customer, withdraw_account_id, *deposit_customer, deposit_account_id, amount))
+        if(bank->transfer(**customer, *deposit_customer, amount))
             std::cout << "\ntransfer was succceful.\n";
         else
             std::cout << "\ntransfer failed.\n";
@@ -268,7 +286,7 @@ int secondMenu(Bank *bank, Customer **customer)
         bank->deleteCustomer((*customer)->getID());
         std::cout << "signing out...";
         Sleep(3000);
-        *customer = NULL;
+        *customer = nullptr;
         return 1;
 
     case 7:
@@ -283,7 +301,7 @@ int secondMenu(Bank *bank, Customer **customer)
         std::cout << "\nwhat is the ID of the account that you want to delete? ";
         std::cin >> account_id;
         Account *account = (*customer)->getAccount(account_id);
-        if (account == NULL)
+        if (account == nullptr)
             break;
 
         if (account->getBalance() > 0)
@@ -307,8 +325,7 @@ int secondMenu(Bank *bank, Customer **customer)
         break;
     }
     case 11:
-        std::cout << "Quitting...\n";
-        delete bank;
+
         return 0;
 
     default:
@@ -326,12 +343,12 @@ int main()
 {
 
     Bank bank = Bank();
-    Customer *customer = NULL;
+    Customer *customer = nullptr;
     while (true)
     {
         
         if (starterMenu(&bank, &customer))
-            return 1;
+            break;
         
         int output;
         do
@@ -343,8 +360,10 @@ int main()
         
         if (output == 0)
         {
-            return 0;
+            break;
         }
 
     }
+    bank.~Bank();
+    return 0;
 }

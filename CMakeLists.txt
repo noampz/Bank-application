@@ -15,7 +15,7 @@ set(HEADERS
 )
 
 set(SOURCES
-    src/app.cpp
+    app.cpp
     src/bank.cpp
     src/customer.cpp
     src/account.cpp

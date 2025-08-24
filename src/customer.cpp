@@ -1,7 +1,12 @@
 #include "customer.hpp"
 #include "bank.hpp"
 
-Customer::Customer(uint32_t id, Bank &bank) : id(id), bank(bank){}
+Customer::Customer(uint32_t id, std::string full_name, std::string password, Bank &bank) : id(id), bank(bank), full_name(full_name)
+{
+    std::hash<std::string> hasher;
+    hashed_password = hasher(password);
+    main_account = nullptr;
+}
 
 Customer::~Customer()
 {
@@ -19,24 +24,24 @@ Customer::~Customer()
     loans.clear();
 }
 
-//returns null if there is not an account with this ID is not found
+//returns nullptr if there is not an account with this ID
 Account* Customer::getAccount(uint32_t id) const
 {
     for (Account* account : accounts)
         if (account->getID() == id)
             return account;
     std::cout << "account with the ID: " << id << " was not found\n";
-    return NULL;
+    return nullptr;
 }
 
-//returns null if there is not a loan with this ID is not found
+//returns nullptr if there is not a loan with this ID
 Loan* Customer::getLoan(uint32_t id) const
 {
     for (Loan* loan : loans)
         if (loan->getID() == id)
             return loan;
     std::cout << "account with the ID: " << id << " was not found\n";
-    return NULL;
+    return nullptr;
 }
 
 uint32_t Customer::createCheckingAccount()
@@ -45,6 +50,8 @@ uint32_t Customer::createCheckingAccount()
     if (account_id % 2 == 0)
         account_id++;
     accounts.push_back(new CheckingAccount(account_id));
+    if (main_account == nullptr)
+        main_account = (CheckingAccount*)accounts.back();
     return account_id;
 }
 
@@ -82,7 +89,7 @@ bool Customer::transferBetweenAccounts(uint32_t from_account_id, uint32_t to_acc
 {
     Account *from_account = getAccount(from_account_id);
     Account *to_account = getAccount(to_account_id);
-    if (from_account == NULL || to_account == NULL)
+    if (from_account == nullptr || to_account == nullptr)
         return false;
         
     //if failed with withdraw it will not even do the deposit thingy
@@ -123,7 +130,7 @@ double Customer::payLoan(uint32_t loan_id, uint32_t account_id, double amount)
     Account *account = getAccount(account_id);
     Loan *loan = getLoan(loan_id);
 
-    if (account == NULL || loan == NULL)
+    if (account == nullptr || loan == nullptr)
     {
         std::cout << "could not find the account or the loan (or both)\n";
         return -2;
