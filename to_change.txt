@@ -1,1 +1,0 @@
-isPasswordGood , isFullNameGood => make actually conditions in them
