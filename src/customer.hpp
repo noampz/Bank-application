@@ -13,20 +13,22 @@ class Customer
 {
     private:
 
-    //explicitly a savings account
     std::vector<SavingsAccount*> savings_accounts;
-
-    //explicitly a checking account
-    CheckingAccount* main_account;
-
     std::vector<Loan*> loans;
     uint32_t id;
     Bank &bank;
     std::string full_name;
     size_t hashed_password;
 
+    //it will be for loans and for accounts
+    uint32_t next_id;
+
+    //explicitly a checking account
+    CheckingAccount* main_account;
     //it will only be called by the constructor
     uint32_t createMainAccount();
+
+
 
     public:
 

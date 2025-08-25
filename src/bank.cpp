@@ -2,6 +2,8 @@
 #include <cstdlib>
 #include <functional>
 
+uint32_t Bank::next_customer_id = 1;
+
 Bank::Bank() : basic_interest(3.0) {}
 
 Bank::~Bank()
@@ -56,23 +58,7 @@ uint32_t Bank::createCustomer(std::string full_name, std::string password)
 
 uint32_t Bank::makeNewCustomerID()
 {
-    if (!seeded)
-    {
-        seeded = true;
-        int temp;
-        srand((uint64_t)&temp);
-    }
-
-    // makes a number from 0 to the max number of unit32_t
-    uint32_t customer_id = (rand() * rand() * rand() * rand()) % 4294967295;
-
-    for (Customer* customer : customers)
-    {
-        if (customer->getID() == customer_id)
-            customer_id = makeNewCustomerID();
-    }
-    
-    return customer_id;
+    return next_customer_id++;
 }
 
 bool Bank::deleteCustomer(int customer_id)

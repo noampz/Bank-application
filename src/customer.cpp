@@ -1,7 +1,7 @@
 #include "customer.hpp"
 #include "bank.hpp"
 
-Customer::Customer(uint32_t id, std::string full_name, std::string password, Bank &bank) : id(id), bank(bank), full_name(full_name)
+Customer::Customer(uint32_t id, std::string full_name, std::string password, Bank &bank) : id(id), bank(bank), full_name(full_name), next_id(1)
 {
     std::hash<std::string> hasher;
     hashed_password = hasher(password);
@@ -55,7 +55,7 @@ uint32_t Customer::createMainAccount()
 
 uint32_t Customer::createSavingsAccount()
 {
-    uint32_t account_id = id / (1 + (rand() % (id / 1000)));
+    uint32_t account_id = next_id++;
     savings_accounts.push_back(new SavingsAccount(bank.getBasicInterest(), account_id));
     return account_id;
 }
@@ -74,7 +74,7 @@ uint32_t Customer::createLoan(double amount_of_money, Account* account)
     }
 
     account->deposit(amount_of_money);
-    uint32_t loan_id = id + loans.size();
+    uint32_t loan_id = next_id++;
     loans.push_back(new Loan(interest, amount_of_money, loan_id));
     
     return loan_id;
@@ -220,7 +220,7 @@ bool Customer::deleteAccount(uint32_t account_id)
         {
             savings_accounts_copy.push_back(savings_accounts.back());
         }
-        
+
         savings_accounts.pop_back();
     }
     savings_accounts = savings_accounts_copy;

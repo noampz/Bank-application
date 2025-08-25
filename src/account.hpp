@@ -6,6 +6,7 @@ class Account
 {
     protected:
     double balance;
+    //this will be an ID for a spesifc account in a customer and not a global ID
     uint32_t id;
 
     public:

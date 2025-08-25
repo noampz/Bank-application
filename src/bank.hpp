@@ -9,7 +9,8 @@ class Bank
     private:
     std::vector<Customer*> customers;
     float basic_interest;
-
+    static uint32_t next_customer_id;
+    
     uint32_t makeNewCustomerID();
     void updateAllLoans(int amount_of_days);
     void updateAllSavingsAccounts(int amount_of_days);
