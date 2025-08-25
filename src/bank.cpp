@@ -20,8 +20,9 @@ double Bank::approveLoan(Customer *customer, double debt)
         std::cout << "loan is not approved\n";
         return -1;
     }
-        
-    return (5 * debt / (total_balance == 0 ? 1 : total_balance)) + basic_interest;
+    
+    //iterest calculation
+    return (10 * debt / (total_balance == 0 ? 1 : total_balance)) + basic_interest;
 }
 
 //TODO:
