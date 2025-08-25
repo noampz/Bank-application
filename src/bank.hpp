@@ -9,7 +9,6 @@ class Bank
     private:
     std::vector<Customer*> customers;
     float basic_interest;
-    bool seeded;
 
     uint32_t makeNewCustomerID();
     void updateAllLoans(int amount_of_days);

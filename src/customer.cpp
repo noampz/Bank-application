@@ -93,7 +93,7 @@ bool Customer::transferBetweenAccounts(uint32_t from_account_id, uint32_t to_acc
     if (to_account_id == 0)
         to_account = main_account;
     else
-        to_account = getSavingsAccount(from_account_id);
+        to_account = getSavingsAccount(to_account_id);
 
     if (from_account == nullptr || to_account == nullptr)
         return false;
@@ -218,8 +218,9 @@ bool Customer::deleteAccount(uint32_t account_id)
         }
         else
         {
-            savings_accounts_copy.push_back(savings_accounts_copy.back());
+            savings_accounts_copy.push_back(savings_accounts.back());
         }
+        
         savings_accounts.pop_back();
     }
     savings_accounts = savings_accounts_copy;

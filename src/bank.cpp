@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <functional>
 
-Bank::Bank() : basic_interest(3.0), seeded(false) {}
+Bank::Bank() : basic_interest(3.0) {}
 
 Bank::~Bank()
 {
