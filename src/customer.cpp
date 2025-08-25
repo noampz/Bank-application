@@ -5,36 +5,38 @@ Customer::Customer(uint32_t id, std::string full_name, std::string password, Ban
 {
     std::hash<std::string> hasher;
     hashed_password = hasher(password);
-    main_account = nullptr;
+    createMainAccount();
 }
 
 Customer::~Customer()
 {
-    int length = accounts.size();
-    for (Account* account : accounts)
+    int length = savings_accounts.size();
+    for (SavingsAccount* savings_account : savings_accounts)
     {
-        delete account;
+        delete savings_account;
     }
-    accounts.clear();
+    savings_accounts.clear();
 
     for (Loan* loan : loans)
     {
         delete loan;
     }
     loans.clear();
+
+    delete main_account;
 }
 
-//returns nullptr if there is not an account with this ID
-Account* Customer::getAccount(uint32_t id) const
+
+SavingsAccount* Customer::getSavingsAccount(uint32_t id) const
 {
-    for (Account* account : accounts)
-        if (account->getID() == id)
-            return account;
+    for (SavingsAccount* savings_account : savings_accounts)
+        if (savings_account->getID() == id)
+            return savings_account;
     std::cout << "account with the ID: " << id << " was not found\n";
     return nullptr;
 }
 
-//returns nullptr if there is not a loan with this ID
+
 Loan* Customer::getLoan(uint32_t id) const
 {
     for (Loan* loan : loans)
@@ -44,28 +46,21 @@ Loan* Customer::getLoan(uint32_t id) const
     return nullptr;
 }
 
-uint32_t Customer::createCheckingAccount()
+uint32_t Customer::createMainAccount()
 {
-    uint32_t account_id = (id + (accounts.size() + 5 * 1000)) * 2;
-    if (account_id % 2 == 0)
-        account_id++;
-    accounts.push_back(new CheckingAccount(account_id));
-    if (main_account == nullptr)
-        main_account = (CheckingAccount*)accounts.back();
+    uint32_t account_id = 0;
+    main_account = new CheckingAccount(account_id);
     return account_id;
 }
 
 uint32_t Customer::createSavingsAccount()
 {
-    uint32_t account_id = (id + (accounts.size() + 5 * 1000)) * 2 + 1;
-    if (account_id % 2 == 1)
-        account_id++;
-    accounts.push_back(new SavingsAccount(bank.getBasicInterest(), account_id));
+    uint32_t account_id = id / (1 + (rand() % (id / 1000)));
+    savings_accounts.push_back(new SavingsAccount(bank.getBasicInterest(), account_id));
     return account_id;
 }
 
-//recives amount_of_money to put it in a loan and an account to put the money in it
-//if returns 0 that means that there want an error
+
 uint32_t Customer::createLoan(double amount_of_money, Account* account)
 {
     if (amount_of_money < 0)
@@ -85,10 +80,21 @@ uint32_t Customer::createLoan(double amount_of_money, Account* account)
     return loan_id;
 }
 
+
 bool Customer::transferBetweenAccounts(uint32_t from_account_id, uint32_t to_account_id, double amount)
 {
-    Account *from_account = getAccount(from_account_id);
-    Account *to_account = getAccount(to_account_id);
+    Account *from_account = nullptr;
+    if (from_account_id == 0)
+        from_account = main_account;
+    else
+        from_account = getSavingsAccount(from_account_id);
+
+    Account *to_account = nullptr;
+    if (to_account_id == 0)
+        to_account = main_account;
+    else
+        to_account = getSavingsAccount(from_account_id);
+
     if (from_account == nullptr || to_account == nullptr)
         return false;
         
@@ -108,26 +114,32 @@ void Customer::updateLoans(int days)
 
 void Customer::updateSavingsAccounts(int days)
 {
-    for (Account* account : accounts)
+    for (SavingsAccount* savings_account : savings_accounts)
     {
-        if (account->getID() % 2 == 0)
-            account->updateBalance(days);
+        savings_account->updateBalance(days);
     }
 }
 
 double Customer::totalBalance()
 {
     double total_balance = 0;
-    for (Account* account : accounts)
-        total_balance += account->getBalance();
+    for (SavingsAccount* savings_account : savings_accounts)
+        total_balance += savings_account->getBalance();
     for (Loan* loan : loans)
         total_balance -= loan->GetDebt();
+    total_balance += main_account->getBalance();
     return total_balance;
 }
 
+
 double Customer::payLoan(uint32_t loan_id, uint32_t account_id, double amount)
 {
-    Account *account = getAccount(account_id);
+    Account *account = nullptr;
+    if (main_account->getID() == 0)
+        account = main_account;
+    else
+        account = getSavingsAccount(account_id);
+    
     Loan *loan = getLoan(loan_id);
 
     if (account == nullptr || loan == nullptr)
@@ -147,7 +159,7 @@ double Customer::payLoan(uint32_t loan_id, uint32_t account_id, double amount)
     switch ((int)result)
     {
     case -2:
-        std::cout << "giving back to the account " << -loan->GetDebt() << "$";
+        std::cout << "giving back to the account " << -loan->GetDebt() << "$\n";
         account->deposit(-loan->GetDebt());
 
     case 0:
@@ -155,7 +167,6 @@ double Customer::payLoan(uint32_t loan_id, uint32_t account_id, double amount)
         //so we have to check if this isnt the case
         if (result != 0 && result != 2)
         {
-            std::cout << "bruh";
             return result;
         }
 
@@ -166,6 +177,8 @@ double Customer::payLoan(uint32_t loan_id, uint32_t account_id, double amount)
         return result;
     }
 }
+
+
 
 bool Customer::deleteLoan(uint32_t loan_id)
 {
@@ -193,23 +206,23 @@ bool Customer::deleteLoan(uint32_t loan_id)
 bool Customer::deleteAccount(uint32_t account_id)
 {
     bool found = false;
-    int length = accounts.size();
-    std::vector<Account*> accounts_copy;
-    accounts_copy.reserve(length - 1);
+    int length = savings_accounts.size();
+    std::vector<SavingsAccount*> savings_accounts_copy;
+    savings_accounts_copy.reserve(length - 1);
     for (int i = length - 1; i >= 0; i--)
     {
-        if (accounts.back()->getID() == account_id)
+        if (savings_accounts.back()->getID() == account_id)
         {
             found = true;
-            delete accounts.back();
+            delete savings_accounts.back();
         }
         else
         {
-            accounts_copy.push_back(accounts.back());
+            savings_accounts_copy.push_back(savings_accounts_copy.back());
         }
-        accounts.pop_back();
+        savings_accounts.pop_back();
     }
-    accounts = accounts_copy;
+    savings_accounts = savings_accounts_copy;
     return found;
 }
 
@@ -217,20 +230,16 @@ bool Customer::deleteAccount(uint32_t account_id)
 
 void Customer::printAllSavingsAccounts()
 {
-    for (Account* account : accounts)
+    for (SavingsAccount* saving_account : savings_accounts)
     {
-        if (account->getID() % 2 == 0)
-            std::cout << "\tID: " << account->getID() << " | balance: " << account->getBalance() << "$ " << "interest rate: " << account->getInterestRate() << "\n";
+        std::cout << "\tID: " << saving_account->getID() << " | balance: " << saving_account->getBalance() << "$ " << "interest rate: " << saving_account->getInterestRate() << "\n";
     }
 }
 
-void Customer::printAllCheckingAccounts()
+void Customer::printMainAccount()
 {
-    for (Account* account : accounts)
-    {
-        if (account->getID() % 2 == 1)
-            std::cout << "\tID: " << account->getID() << " | balance: " << account->getBalance() << "$\n";
-    }
+    std::cout << "\tID: " << main_account->getID() << " | balance: " << main_account->getBalance() << "$\n";
+    
 }
 
 
@@ -238,14 +247,14 @@ void Customer::printAllLoans()
 {
     for (Loan* loan : loans)
     {
-        std::cout << "\tID: " << loan->getID() << " | debt: " << -loan->GetDebt() << "$\n";
+        std::cout << "\tID: " << loan->getID() << " | debt: " << -loan->GetDebt() << "$ | interest rate: " << loan->getInterestRate() << "\n";
     }
 }
 
 void Customer::printAllAccountsInCustomer()
 {
-    std::cout << "Your Checking Accounts: \n";
-    printAllCheckingAccounts();
+    std::cout << "Your Main (checking) Account \n";
+    printMainAccount();
     std::cout << "Your Savings Accounts: \n";
     printAllSavingsAccounts();
     std::cout << "Your Loans: \n";

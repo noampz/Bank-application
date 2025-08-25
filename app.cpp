@@ -111,23 +111,22 @@ void printSecondMenu()
     std::cout << "-----MENU-----\n";
 
     std::cout << "\n------ACCOUNT OPERATION------\n";
-    std::cout << "Make a new checking account -> 1\n";
-    std::cout << "Make a new savings account -> 2\n";
-    std::cout << "Get a Loan -> 3\n";
-    std::cout << "Pay Loan -> 4\n";
-    std::cout << "Transfer money from account to a diffrent account -> 5\n";
-    std::cout << "Transfer money to someone else -> 6\n";
+    std::cout << "Make a new savings account -> 1\n";
+    std::cout << "Get a Loan -> 2\n";
+    std::cout << "Pay Loan -> 3\n";
+    std::cout << "Transfer money from account to a diffrent account -> 4\n";
+    std::cout << "Transfer money to someone else -> 5\n";
 
-    std::cout << "\nSign out -> 7\n";
+    std::cout << "\nSign out -> 6\n";
 
     std::cout << "\n-----DELETE-----\n";
-    std::cout << "Delete customer -> 8\n";
-    std::cout << "Delete account -> 9\n";
+    std::cout << "Delete customer -> 7\n";
+    std::cout << "Delete account -> 8\n";
 
     std::cout << "\n-----TIME SETTINGS-----\n";
-    std::cout << "Fast forward (change days) -> 10\n";
+    std::cout << "Fast forward (change days) -> 9\n";
 
-    std::cout << "\nQuit -> 11\n";
+    std::cout << "\nQuit -> 10\n";
 }
 
 
@@ -162,18 +161,6 @@ int secondMenu(Bank *bank, Customer **customer)
     {
     case 1:
     {
-        int id = (*customer)->createCheckingAccount();
-        if (id == -1)
-        {
-            std::cout << "there was an error with creating a Checking account.";
-            Sleep(3000);
-            break;
-        }
-        std::cout << "created Checking Account with the ID: "<< id << "\n";
-        break;
-    }
-    case 2:
-    {
         int id = (*customer)->createSavingsAccount();
     
         if (id == -1)
@@ -185,20 +172,14 @@ int secondMenu(Bank *bank, Customer **customer)
         std::cout << "created a Savings Account with the ID: "<< id << "\n";
         break;
     }
-    case 3:
+    case 2:
     {
         double amount;
         std::cout << "what is the amount of money for the loan? ";
         std::cin >> amount;
 
-        uint32_t account_id;
-        std::cout << "\nwhat is the ID of the account from which you want to recive the money? ";
-        std::cin >> account_id;
-        Account * account = (*customer)->getAccount(account_id);
-        if (account == nullptr)
-            break;
 
-        uint32_t loan_answer = (*customer)->createLoan(amount, account);
+        uint32_t loan_answer = (*customer)->createLoan(amount, (*customer)->getMainAccount());
         if (loan_answer == 0)
         {
             std::cout << "Error occured\n";
@@ -209,44 +190,39 @@ int secondMenu(Bank *bank, Customer **customer)
 
         break;
     }
-    case 4:
+    case 3:
     {
         std::cout << "what is the ID of the loan? ";
 
         uint32_t loan_id;
         std::cin >> loan_id;
 
-        uint32_t account_id;
-        std::cout << "\nwhat is the ID of the account from which you want to pay the loan? ";
-        std::cin >> account_id;
-
         double amount;
         std::cout << "\nhow much do you want to pay for loan (-1 if you want to pay all the loan)? ";
         std::cin >> amount;
         if (amount == -1)
         {
-            std::cout << "ok";
-            double temp = (*customer)->payLoan(loan_id, account_id, (*customer)->getLoan(loan_id)->GetDebt());
+            double temp = (*customer)->payLoan(loan_id, 0, (*customer)->getLoan(loan_id)->GetDebt());
             std::cout << temp;
             if (temp == 0)
                 std::cout << "\nyou finished paying the loan! congrats!!!";
         }
         else
         {
-            if ((*customer)->payLoan(loan_id, account_id, amount) > 0)
+            if ((*customer)->payLoan(loan_id, 0, amount) > 0)
                 std::cout << "\nyou still need to pay: " << (*customer)->getLoan(loan_id)->GetDebt() << "$ to finish paying the loan.\n";
         }
         Sleep(3000);
         break;
     }
-    case 5:
+    case 4:
     {
         uint32_t withdraw_account_id;
-        std::cout << "\nwhat is the ID of the account from which you want to send the money? ";
+        std::cout << "\nwhat is the ID of the account from which you want to send the money (0 if you want main account)? ";
         std::cin >> withdraw_account_id;
 
         uint32_t deposit_account_id;
-        std::cout << "\nwhat is the ID of the account from which you want to send the money? ";
+        std::cout << "\nwhat is the ID of the account to which you want the money to be sent (0 if you want main account)? ";
         std::cin >> deposit_account_id;
 
         double amount;
@@ -258,7 +234,7 @@ int secondMenu(Bank *bank, Customer **customer)
             std::cout << "\ntransfer failed.\n";
         break;
     }
-    case 6:
+    case 5:
     {
         uint32_t deposit_customer_id;
         std::cout << "\nwhat is the ID of the customer that you want to send him money? ";
@@ -280,7 +256,12 @@ int secondMenu(Bank *bank, Customer **customer)
 
         break;
     }
-    case 8:
+    case 6:
+        std::cout << "signing out...";
+        *customer = nullptr;
+        return 1;
+
+    case 7:
         //deleting customer and signing out
         std::cout << "deleting customer...\n";
         bank->deleteCustomer((*customer)->getID());
@@ -289,18 +270,12 @@ int secondMenu(Bank *bank, Customer **customer)
         *customer = nullptr;
         return 1;
 
-    case 7:
-
-        std::cout << "signing out...";
-        *customer = nullptr;
-        return 1;
-
-    case 9:
+    case 8:
     {
         uint32_t account_id;
-        std::cout << "\nwhat is the ID of the account that you want to delete? ";
+        std::cout << "\nwhat is the ID of the savings account that you want to delete? ";
         std::cin >> account_id;
-        Account *account = (*customer)->getAccount(account_id);
+        Account *account = (*customer)->getSavingsAccount(account_id);
         if (account == nullptr)
             break;
 
@@ -309,12 +284,13 @@ int secondMenu(Bank *bank, Customer **customer)
             std::cout << "\nWarning! the account still has " << account->getBalance() << "$ in it.\n";
             // maybe help him put the money in another account?
         }
-        
+        Sleep(3000);
+        //maybe we need to wait for confirmation
         std::cout << "\ndeleting account...\n";
         (*customer)->deleteAccount(account_id);
         break;
     }
-    case 10:
+    case 9:
     {
         int amount;
         std::cout << "how many days do you want to fast forward? ";
@@ -324,8 +300,8 @@ int secondMenu(Bank *bank, Customer **customer)
         std::cout << "\nwe are now at day " << time.day << "\n";
         break;
     }
-    case 11:
-
+    case 10:
+        std::cout << "Quitting...\n";
         return 0;
 
     default:
@@ -333,7 +309,7 @@ int secondMenu(Bank *bank, Customer **customer)
         std::cout << "Quitting...\n";
         return 0;
     }
-    return -1; // maybe change this
+    return -1;
 }
 
 //I dont want to tell the user about customer so Im telling him "account"

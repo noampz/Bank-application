@@ -2,7 +2,7 @@
 #include "account.hpp"
 #include <cstdint>
 
-class SavingsAccount : public Account 
+class SavingsAccount : public Account
 {
     private:
     float interest_percent;

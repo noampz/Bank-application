@@ -12,10 +12,9 @@ class Bank;
 class Customer
 {
     private:
-    // savings accounts ID will be %2 == 0
-    // while checking accounts ID will be %2 == 1
-    // IMPORTANT: Main account will also be here (currently it will be the first checking account)
-    std::vector<Account*> accounts;
+
+    //explicitly a savings account
+    std::vector<SavingsAccount*> savings_accounts;
 
     //explicitly a checking account
     CheckingAccount* main_account;
@@ -25,6 +24,9 @@ class Customer
     Bank &bank;
     std::string full_name;
     size_t hashed_password;
+
+    //it will only be called by the constructor
+    uint32_t createMainAccount();
 
     public:
 
@@ -36,22 +38,28 @@ class Customer
     std::string getFullName() const {return full_name;}
     CheckingAccount* getMainAccount() const {return main_account;}
 
-    // get by id
-    Account* getAccount(uint32_t id) const;
+    //returns nullptr if there is not a savings account with this ID
+    SavingsAccount* getSavingsAccount(uint32_t id) const;
+    //returns nullptr if there is not a loan with this ID
     Loan* getLoan(uint32_t id) const;
 
     bool deleteAccount(uint32_t account_id);
     bool deleteLoan(uint32_t loan_id);
 
-    uint32_t createCheckingAccount();
+    
     uint32_t createSavingsAccount();
+    //recives amount_of_money to put it in a loan and an account to put the money in it
+    //if returns 0 that means that there want an error
     uint32_t createLoan(double amount_of_money, Account* account);
+
+    // insert 0 in ID if wants to use main account
     bool transferBetweenAccounts(uint32_t from_account_id, uint32_t to_account_id, double amount);
 
     // -2 -> if could not find loan or account
     // -1 -> if there is an error with the withdraw
     // 0 -> if now you paid all the loan (and it deletes the loan)
     // any other number is the amount of money that is needed to pay off all the loan
+    //if ID = 0 then it will use the main account
     double payLoan(uint32_t loan_id, uint32_t account_id, double amount);
 
     void updateLoans(int days);
@@ -60,7 +68,7 @@ class Customer
     double totalBalance();
 
     void printAllSavingsAccounts();
-    void printAllCheckingAccounts();
+    void printMainAccount();
     void printAllLoans();
 
     void printAllAccountsInCustomer();

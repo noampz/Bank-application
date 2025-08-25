@@ -15,8 +15,9 @@ class Loan
     
     // returns the amount of debt in loan
     double GetDebt() const {return debt;}
-
+    float getInterestRate() const {return interest_rate;}
     
+    //add interest amount to the debt
     void addInterest(int num_of_days);
     
     //gets the amount to pay the loan

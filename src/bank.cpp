@@ -105,25 +105,6 @@ bool Bank::deleteCustomer(int customer_id)
     return found;
 }
 
-bool Bank::transfer(Customer &from_customer, uint32_t from_id_of_account, Customer &to_customer, uint32_t to_id_of_account, double amount)
-{
-    Account *from_account = from_customer.getAccount(from_id_of_account);
-    if (from_account == nullptr)
-       return false;
-
-    Account *to_account = to_customer.getAccount(to_id_of_account);
-    if (to_account == nullptr)
-        return false;
-
-    if(from_account->withdraw(amount) >= 0)
-    {
-        to_account->deposit(amount);
-        return true;
-    }
-        
-    return false;
-}
-
 bool Bank::transfer(Customer &from_customer, Customer &to_customer, double amount)
 {
     Account *from_account = from_customer.getMainAccount();

@@ -31,8 +31,6 @@ class Bank
     //true if succeded false if not
     bool deleteCustomer(int customer_id);
 
-    //transfer between spesifc accounts
-    bool transfer(Customer &from_customer, uint32_t from_id_of_account, Customer &to_customer, uint32_t to_id_of_account, double amount);
     //transfer between both of the main accounts
     bool transfer(Customer &from_customer, Customer &to_customer, double amount);
     
