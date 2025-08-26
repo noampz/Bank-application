@@ -10,8 +10,9 @@ Bank::~Bank()
 {
     for (Customer* customer : customers)
     {
-        delete(customer);
+        delete customer;
     }
+    customers.clear();
 }
 
 double Bank::approveLoan(Customer *customer, double debt)
@@ -80,7 +81,7 @@ bool Bank::deleteCustomer(int customer_id)
         }
         else
         {
-            customers_copy.push_back(customers.back());
+            customers_copy.push_back(customers.at(i));
         }
         customers.pop_back();
     }
