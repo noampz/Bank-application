@@ -12,6 +12,7 @@ set(HEADERS
     src/savingsAccount.hpp
     src/loan.hpp
     src/time.hpp
+    src/ui.hpp
 )
 
 set(SOURCES
@@ -23,6 +24,7 @@ set(SOURCES
     src/savingsAccount.cpp
     src/loan.cpp
     src/time.cpp
+    src/ui.cpp
 )
 
 add_executable(bank_app ${SOURCES} ${HEADERS})
